@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, screen } = require('electron');
 const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -7,10 +7,15 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 const createWindow = () => {
-  // Create the browser window.
+  // Size the window to fit the screen, up to 1280x800.
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
   const mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768,
+    width: Math.min(1280, width),
+    height: Math.min(800, height),
+    minWidth: 800,
+    minHeight: 600,
+    center: true,
     webPreferences: {
       devTools: false
     }
