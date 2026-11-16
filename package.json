@@ -1,8 +1,8 @@
 {
-  "name": "test-electron-forge",
-  "productName": "test-electron-forge",
+  "name": "SCAVS",
+  "productName": "SCAVS",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "An interactive fiction game by Ben Jackson",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
