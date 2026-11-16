@@ -25,18 +25,7 @@ module.exports = {
         executableName: process.env.APP_NAME,
         appVersion: appVersion,
         buildVersion: appVersion,
-        icon: "./icons/icon",
-        osxSign: {
-            entitlements: './entitlements.plist',      
-            'entitlements-inherit': './entitlements.plist',      
-            'gatekeeper-assess': false,
-            hardenedRuntime: true,
-            identity: process.env['CERTIFICATE_NAME']
-        },
-        osxNotarize: {
-            appleId: process.env['APPLE_ID'],
-            appleIdPassword: process.env['APPLE_ID_PASSWORD'],
-        }
+        icon: "./icons/icon"
     },
     makers: [
     {
@@ -62,7 +51,24 @@ module.exports = {
     ]
 }
 
+// Only sign and notarize if an Apple certificate has been provided
+if (process.env['CERTIFICATE_NAME']) {
+    module.exports.packagerConfig.osxSign = {
+        entitlements: './entitlements.plist',
+        'entitlements-inherit': './entitlements.plist',
+        'gatekeeper-assess': false,
+        hardenedRuntime: true,
+        identity: process.env['CERTIFICATE_NAME']
+    }
 
-if (process.env["APPLE_PROVIDER"]) {
-    module.exports.packagerConfig.osxNotarize.ascProvider = process.env["APPLE_PROVIDER"]
+    if (process.env['APPLE_ID']) {
+        module.exports.packagerConfig.osxNotarize = {
+            appleId: process.env['APPLE_ID'],
+            appleIdPassword: process.env['APPLE_ID_PASSWORD']
+        }
+
+        if (process.env['APPLE_PROVIDER']) {
+            module.exports.packagerConfig.osxNotarize.ascProvider = process.env['APPLE_PROVIDER']
+        }
+    }
 }
