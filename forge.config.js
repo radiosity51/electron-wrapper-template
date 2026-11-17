@@ -3,7 +3,7 @@ const gitRef = process.env.GITHUB_REF || ''
 // By default, the version number is the GH Actions build number
 // This will not change if you re-run an exact build.
 // (I wanted to use the commit SHA, but Windows version numbers must be decimal)
-let appVersion = process.env.GITHUB_RUN_NUMBER
+let appVersion = process.env.VERSION || process.env.GITHUB_RUN_NUMBER
 
 // However, if there's a git tag of the form "v1.2.3", use that instead
 // It's assumed power users will prefer manually tagging vesrions.
