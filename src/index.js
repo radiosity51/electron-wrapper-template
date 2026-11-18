@@ -1,5 +1,6 @@
 const { app, BrowserWindow, screen } = require('electron');
 const path = require('path');
+ipcMain: const { app, BrowserWindow, screen, ipcMain } = require('electron');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -17,7 +18,8 @@ const createWindow = () => {
     minHeight: 600,
     center: true,
     webPreferences: {
-      devTools: false
+      devTools: false,
+      preload: path.join(__dirname, 'preload.js'),
     }
   });
 
@@ -44,6 +46,26 @@ app.on('activate', () => {
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
+  }
+});
+
+const STEAM_APP_ID = 0; // replace 0 with your real Steam App ID
+let steamClient = null;
+
+try {
+  const steamworks = require('steamworks.js');
+  steamClient = steamworks.init(STEAM_APP_ID);
+  steamworks.electronEnableSteamOverlay();
+} catch (e) {
+  console.log('Steam not available:', e.message);
+}
+
+ipcMain.handle('steam-unlock', (event, id) => {
+  if (!steamClient) return false;
+  try {
+    return steamClient.achievement.activate(String(id));
+  } catch (e) {
+    return false;
   }
 });
 
