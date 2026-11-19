@@ -1,6 +1,5 @@
-const { app, BrowserWindow, screen } = require('electron');
+const { app, BrowserWindow, screen, ipcMain } = require('electron');
 const path = require('path');
-ipcMain: const { app, BrowserWindow, screen, ipcMain } = require('electron');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -53,9 +52,11 @@ const STEAM_APP_ID = 0; // replace 0 with your real Steam App ID
 let steamClient = null;
 
 try {
-  const steamworks = require('steamworks.js');
-  steamClient = steamworks.init(STEAM_APP_ID);
-  steamworks.electronEnableSteamOverlay();
+  if (STEAM_APP_ID) {
+    const steamworks = require('steamworks.js');
+    steamClient = steamworks.init(STEAM_APP_ID);
+    steamworks.electronEnableSteamOverlay();
+  }
 } catch (e) {
   console.log('Steam not available:', e.message);
 }
