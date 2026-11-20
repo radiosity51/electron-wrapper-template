@@ -38,7 +38,7 @@ module.exports = {
     },
     {
         name: "@electron-forge/maker-zip",
-        platforms: ["darwin"]
+        platforms: ["darwin", "win32"]
     },
     {
         name: "@electron-forge/maker-deb",
@@ -72,3 +72,20 @@ if (process.env['CERTIFICATE_NAME']) {
         }
     }
 }
+
+// Ad-hoc sign the Mac app when no real Apple certificate is supplied
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+module.exports.hooks = {
+    postPackage: async (forgeConfig, options) => {
+        if (options.platform !== 'darwin' || process.env['CERTIFICATE_NAME']) return;
+        for (const dir of options.outputPaths) {
+            const app = fs.readdirSync(dir).find((f) => f.endsWith('.app'));
+            if (app) {
+                execSync(`codesign --force --deep --sign - "${path.join(dir, app)}"`, { stdio: 'inherit' });
+            }
+        }
+    }
+};
